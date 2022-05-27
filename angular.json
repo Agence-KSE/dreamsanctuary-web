@@ -107,6 +107,16 @@
               "src/**/*.html"
             ]
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "boilerplate-angular:build:production",
+            "firebaseProject": "dream-sanctuary-42daf",
+            "firebaseHostingSite": "dream-sanctuary-42daf"
+          }
         }
       }
     }

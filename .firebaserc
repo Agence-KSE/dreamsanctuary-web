@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "dream-sanctuary-42daf": {
+      "hosting": {
+        "boilerplate-angular": [
+          "dream-sanctuary-42daf"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "dream-sanctuary-42daf"
+  }
+}
