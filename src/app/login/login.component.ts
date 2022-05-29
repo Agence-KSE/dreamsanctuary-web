@@ -7,6 +7,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { DatabaseService } from '../services/database/database.service';
 import { UserModel } from '../models/user.model';
 import FirebaseError = firebase.FirebaseError;
+import { UserActions } from '../state/user/user.action';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +25,7 @@ export class LoginComponent {
 
   constructor(
     private readonly router: Router,
-    // private readonly store: Store,
+    private readonly store: Store,
     private readonly auth: AngularFireAuth,
     private readonly databaseService: DatabaseService
   ) {}
@@ -37,12 +39,8 @@ export class LoginComponent {
       switchMap((userCredential: any) => {
         return this.databaseService.getUser(userCredential.user.uid).pipe(
           tap((user: UserModel) => {
-            // this.store.dispatch(
-            //   UserActions.userLogin({
-            //     user: user,
-            //   })
-            // );
-            // this.router.navigate(['/profile']);
+            this.store.dispatch(UserActions.userLogin({ user }));
+            this.router.navigate(['/profile']);
           })
         );
       }),
