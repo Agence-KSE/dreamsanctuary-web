@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { catchError, from, Observable, of, switchMap, tap } from 'rxjs';
-import firebase from 'firebase/compat';
+import firebase from 'firebase/compat/app';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { DatabaseService } from '../services/database/database.service';
 import { UserModel } from '../models/user.model';
-import FirebaseError = firebase.FirebaseError;
 import { UserActions } from '../state/user/user.action';
 import { Store } from '@ngrx/store';
+import FirebaseError = firebase.FirebaseError;
 
 @Component({
   selector: 'app-login',
@@ -51,6 +51,27 @@ export class LoginComponent {
         return of(error);
       })
     );
+  }
+
+  loginWithGoogle(): void {
+    from(this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()))
+      .pipe(
+        switchMap((userCredential: any) => {
+          return this.databaseService.getUser(userCredential.user.uid).pipe(
+            tap((user: UserModel) => {
+              this.store.dispatch(UserActions.userLogin({ user }));
+              this.router.navigate(['/profile']);
+            })
+          );
+        }),
+        catchError((error: FirebaseError) => {
+          this.isError = true;
+          this.loginForm.value.password = '';
+          console.log(error.message);
+          return of(error);
+        })
+      )
+      .subscribe();
   }
 
   showPassword(): void {

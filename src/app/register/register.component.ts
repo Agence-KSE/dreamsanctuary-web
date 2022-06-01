@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { from, Observable, switchMap } from 'rxjs';
+import { from, Observable, switchMap, tap } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { DatabaseService } from '../services/database/database.service';
-import firebase from 'firebase/compat';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-register',
@@ -51,6 +51,24 @@ export class RegisterComponent {
         });
       })
     );
+  }
+
+  registerWithGoogle(): void {
+    from(this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()))
+      .pipe(
+        switchMap((v: firebase.auth.UserCredential) => {
+          return this.databaseService.addUser({
+            id: v.user!.uid,
+            username: v.user!.displayName!,
+            email: v.user!.email!,
+            aboutMe: '',
+            phoneNumber: '',
+            photoUrl: '',
+          });
+        }),
+        tap(() => this.router.navigate(['/login']))
+      )
+      .subscribe();
   }
 
   showPassword(): void {
